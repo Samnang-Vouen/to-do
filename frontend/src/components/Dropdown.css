@@ -1,0 +1,176 @@
+/* ==========================================================================
+   Sci-Fi Reusable Dropdown Component Styles (Dropdown.css)
+   ========================================================================== */
+
+.custom-dropdown-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  user-select: none;
+}
+
+.custom-dropdown-label {
+  font-family: var(--font-hud);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Trigger Button */
+.custom-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  width: 100%;
+}
+
+.custom-dropdown-trigger:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-cyan);
+  box-shadow: var(--accent-glow);
+}
+
+.custom-dropdown-trigger:focus-visible,
+.custom-dropdown-trigger.open {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--accent-glow);
+  outline: none;
+}
+
+.custom-dropdown-trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Trigger Content */
+.custom-dropdown-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-dropdown-placeholder {
+  color: var(--text-muted);
+}
+
+.custom-dropdown-chevron {
+  color: var(--accent-cyan);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.custom-dropdown-trigger.open .custom-dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu Overlay */
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: 190px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), var(--accent-glow);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  z-index: 50;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: dropdownSciFiOpen 0.15s ease-out;
+  backdrop-filter: blur(16px);
+}
+
+@keyframes dropdownSciFiOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dropdown Option Items */
+.custom-dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 2px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  width: 100%;
+}
+
+.custom-dropdown-option:hover {
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--accent-cyan);
+}
+
+.custom-dropdown-option.selected {
+  background: rgba(0, 240, 255, 0.18);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.custom-dropdown-option-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-dropdown-option-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--accent-cyan);
+}
+
+.custom-dropdown-check-icon {
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+/* Sizes */
+.custom-dropdown-container.size-sm .custom-dropdown-trigger {
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.custom-dropdown-container.size-lg .custom-dropdown-trigger {
+  padding: 10px 14px;
+  font-size: 14px;
+}
