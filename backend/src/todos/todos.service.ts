@@ -7,7 +7,6 @@ import { Todo } from './entities/todo.entity.js';
 
 @Injectable()
 export class TodosService {
-
   constructor(
     @InjectRepository(Todo)
     private repo: Repository<Todo>,
@@ -18,11 +17,11 @@ export class TodosService {
   }
 
   findAll() {
-    return this.repo.find({order: {createdAt: 'DESC'}});
+    return this.repo.find({ order: { createdAt: 'DESC' } });
   }
 
   async findOne(id: number) {
-    const todo = await this.repo.findOneBy({id});
+    const todo = await this.repo.findOneBy({ id });
     if (!todo) throw new NotFoundException(`Todo ${id} not found`);
     return todo;
   }
@@ -36,6 +35,6 @@ export class TodosService {
   async remove(id: number) {
     const todo = await this.findOne(id);
     await this.repo.remove(todo);
-    return {delete: true, id: id};
+    return { delete: true, id: id };
   }
 }

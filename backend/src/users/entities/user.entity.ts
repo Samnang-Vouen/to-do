@@ -1,44 +1,44 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Todo } from '../../todos/entities/todo.entity.js';
 
 export enum UserRole {
-    ADMIN = 'admin',
-    OPERATOR = 'operator',
+  ADMIN = 'admin',
+  OPERATOR = 'operator',
 }
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({ unique: true })
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    password: string;
+  @Column({ select: false })
+  password: string;
 
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.OPERATOR })
-    role: UserRole;
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.OPERATOR })
+  role: UserRole;
 
-    @Column({ default: 'dark' })
-    theme: string;
+  @Column({ default: 'dark' })
+  theme: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @OneToMany(() => Todo, (todo) => todo.user)
-    todos: Todo[];
+  @OneToMany(() => Todo, (todo) => todo.user)
+  todos: Todo[];
 }
