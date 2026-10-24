@@ -7,7 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module.js';
 import { ConfigModule } from '@nestjs/config';
 import databaseConfig from './config/database.config.js';
+import authConfig from './config/auth.config.js';
 import { resolve } from 'path';
+import { AuthModule } from './auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -16,12 +18,13 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: resolve(import.meta.dirname, '../.env'),
-      load: [databaseConfig],
+      load: [databaseConfig, authConfig],
       cache: true,
     }),
     TypeOrmModule.forRootAsync(databaseConfig.asProvider()),
     TodosModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

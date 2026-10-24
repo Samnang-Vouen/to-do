@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import { User } from '../../users/entities/user.entity.js';
 
 export enum TodoStatus {
@@ -55,5 +56,5 @@ export class Todo {
   updatedAt: Date;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  user: User;
+  user: Relation<User>; // Relation<> avoids a circular-import crash under ESM
 }
