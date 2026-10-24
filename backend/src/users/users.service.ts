@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,8 +17,16 @@ export class UsersService {
     private repo: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.repo.save(this.repo.create(createUserDto));
+  async create(createUserDto: CreateUserDto) {
+    if (await this.repo.existsBy({ email: createUserDto.email })) {
+      throw new ConflictException('Email already registered');
+    }
+    const user = this.repo.create({
+      ...createUserDto,
+      password: await argon2.hash(createUserDto.password),
+    });
+    const saved = await this.repo.save(user);
+    return this.findOne(saved.id); // re-read so the hash isn't returned
   }
 
   findAll() {
@@ -26,10 +39,21 @@ export class UsersService {
     return user;
   }
 
+  findByEmailWithPassword(email: string) {
+    return this.repo.findOne({
+      where: { email },
+      select: { id: true, email: true, password: true },
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
+    if (updateUserDto.password) {
+      updateUserDto.password = await argon2.hash(updateUserDto.password);
+    }
     Object.assign(user, updateUserDto);
-    return this.repo.save(user);
+    await this.repo.save(user);
+    return this.findOne(id);
   }
 
   async remove(id: number) {
