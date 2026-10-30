@@ -961,6 +961,36 @@
   border-color: var(--warning);
 }
 
+/* Assignee Badge (admin only: reassign via native select) */
+.badge-assignee {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.badge-assignee:hover,
+.badge-assignee:focus-within {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.badge-assignee select {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.badge-assignee option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 /* Actions */
 .task-actions {
   display: flex;

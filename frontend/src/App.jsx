@@ -102,14 +102,32 @@ useEffect(() => {
   todosApi.getAll().then(setTasks).catch((e) => setError(e.message))
 }, [userId])
 
+// Operators the admin can assign tasks to (GET /users is admin-only)
+const [operators, setOperators] = useState([])
+const userRole = user?.role
+
+useEffect(() => {
+  if (userRole !== 'admin') return
+  usersApi
+    .getAll()
+    .then((users) => setOperators(users.filter((u) => u.role === 'operator')))
+    .catch((e) => setError(e.message))
+}, [userRole])
+
 // Task actions: call the API first, then update the screen
-const handleAddTask = async ({ title, category, priority, dueDate }) => {
-  const created = await todosApi.create({ title, category, priority, dueDate: dueDate || null })
+const handleAddTask = async ({ title, category, priority, dueDate, userId }) => {
+  const created = await todosApi.create({ title, category, priority, dueDate: dueDate || null, userId })
   setTasks((prev) => [created, ...prev])
 }
 
+// userId null = unassign
+const handleAssignTask = async (id, userId) => {
+  const updated = await todosApi.update(id, { userId })
+  setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)))
+}
+
 const handleStatusChange = async (id, status) => {
-  const updated = await todosApi.update(id, { status })
+  const updated = await todosApi.updateStatus(id, status)
   setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)))
 }
 
@@ -189,6 +207,9 @@ const handleClearCompleted = async () => {
     )
   }
 
+  // Operators can only change status; creating, editing and deleting are admin-only
+  const isAdmin = user.role === 'admin'
+
   return (
     <>
       <CyberSnakeBackground />
@@ -204,7 +225,7 @@ const handleClearCompleted = async () => {
 
       <TaskStats tasks={tasks} />
 
-      <TaskForm onAddTask={handleAddTask} />
+      {isAdmin && <TaskForm onAddTask={handleAddTask} operators={operators} />}
 
       <TaskFilters
         searchQuery={searchQuery}
@@ -219,6 +240,9 @@ const handleClearCompleted = async () => {
 
       <TaskList
         tasks={filteredTasks}
+        canManage={isAdmin}
+        operators={operators}
+        onAssign={handleAssignTask}
         onStatusChange={handleStatusChange}
         onDelete={handleDeleteTask}
         onEdit={handleEditTask}
