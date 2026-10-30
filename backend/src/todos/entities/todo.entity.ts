@@ -34,6 +34,9 @@ export class Todo {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int', nullable: true})
+  userId: number | null;
+
   @Column()
   title: string;
 
@@ -55,6 +58,6 @@ export class Todo {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  user: Relation<User>; // Relation<> avoids a circular-import crash under ESM
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  user: Relation<User> | null; // Relation<> avoids a circular-import crash under ESM
 }

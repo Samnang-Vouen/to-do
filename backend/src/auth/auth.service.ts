@@ -14,6 +14,7 @@ import type {
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { RefreshToken } from './entities/refresh-token.entity.js';
+import { User } from '../users/entities/user.entity.js';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
 
   async register(dto: RegisterDto): Promise<AuthTokens> {
     const user = await this.users.create(dto);
-    return this.issueTokens(user.id, user.email);
+    return this.issueTokens(user);
   }
 
   async login(dto: LoginDto): Promise<AuthTokens> {
@@ -42,7 +43,7 @@ export class AuthService {
     if (!user || !valid) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    return this.issueTokens(user.id, user.email);
+    return this.issueTokens(user);
   }
 
   async refresh(token: string | undefined): Promise<AuthTokens> {
@@ -57,7 +58,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const user = await this.users.findOne(payload.sub);
-    return this.issueTokens(user.id, user.email);
+    return this.issueTokens(user);
   }
 
   async logout(token: string | undefined): Promise<void> {
@@ -81,23 +82,22 @@ export class AuthService {
   }
 
   private async issueTokens(
-    userId: number,
-    email: string,
+    user: Pick<User, 'id' | 'email' | 'role'>
   ): Promise<AuthTokens> {
     const { id } = await this.refreshTokens.save(
       this.refreshTokens.create({
-        userId,
+        userId: user.id,
         expiresAt: new Date(Date.now() + this.config.refreshTtl * 1000),
       }),
     );
-    const accessPayload: AccessTokenPayload = { sub: userId, email };
+    const accessPayload: AccessTokenPayload = { sub: user.id, email: user.email, role: user.role };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(accessPayload, {
         secret: this.config.accessSecret,
         expiresIn: this.config.accessTtl,
       }),
       this.jwt.signAsync(
-        { sub: userId },
+        { sub: user.id },
         {
           secret: this.config.refreshSecret,
           expiresIn: this.config.refreshTtl,
