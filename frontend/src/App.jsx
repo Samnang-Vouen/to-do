@@ -6,7 +6,8 @@ import TaskFilters from './components/TaskFilters'
 import TaskList from './components/TaskList'
 import ProfileCard from './components/ProfileCard'
 import CyberSnakeBackground from './components/CyberSnakeBackground'
-import { todosApi } from './Api.js'
+import LoginPage from './components/LoginPage'
+import { authApi, onUnauthorized, todosApi, usersApi } from './Api.js'
 import './App.css'
 
 // const INITIAL_TASKS = [
@@ -48,12 +49,6 @@ import './App.css'
 //   },
 // ]
 
-const DEFAULT_USER = {
-  name: 'Sam',
-  email: 'sam@example.com',
-  role: 'Operator',
-}
-
 // Older saved tasks used a `completed` boolean instead of `status`
 const normalizeTask = (task) => {
   if (task.status) return task
@@ -79,13 +74,33 @@ export default function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }
 
-  // Tasks state: load from the backend once, when the page opens
+  // Signed-in user: undefined while checking the session, null when signed out
+  const [user, setUser] = useState(undefined)
+
+  useEffect(() => {
+    onUnauthorized(() => setUser(null))
+    authApi.me().then(setUser).catch(() => setUser(null))
+  }, [])
+
+  const handleLogout = async () => {
+    await authApi.logout()
+    setUser(null)
+    setTasks([])
+  }
+
+  const handleSaveProfile = async ({ name, email }) => {
+    setUser(await usersApi.update(user.id, { name, email }))
+  }
+
+  // Tasks state: load from the backend once the user is signed in
 const [tasks, setTasks] = useState([])
 const [error, setError] = useState(null)
 
+const userId = user?.id
 useEffect(() => {
+  if (!userId) return
   todosApi.getAll().then(setTasks).catch((e) => setError(e.message))
-}, [])
+}, [userId])
 
 // Task actions: call the API first, then update the screen
 const handleAddTask = async ({ title, category, priority, dueDate }) => {
@@ -113,21 +128,6 @@ const handleClearCompleted = async () => {
   await Promise.all(done.map((t) => todosApi.remove(t.id)))   // no bulk endpoint, so delete one by one
   setTasks((prev) => prev.filter((t) => t.status !== 'done'))
 }
-
-  // User / profile state
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('taskflow_user')
-      if (saved) return { ...DEFAULT_USER, ...JSON.parse(saved) }
-    } catch {
-      // ignore parse errors
-    }
-    return DEFAULT_USER
-  })
-
-  useEffect(() => {
-    localStorage.setItem('taskflow_user', JSON.stringify(user))
-  }, [user])
 
   // Filter and Sort states
   const [searchQuery, setSearchQuery] = useState('')
@@ -178,13 +178,29 @@ const handleClearCompleted = async () => {
   const hasActiveFilters =
     Boolean(searchQuery.trim()) || statusFilter !== 'all' || categoryFilter !== 'All'
 
+  if (user === undefined) return <CyberSnakeBackground />
+
+  if (!user) {
+    return (
+      <>
+        <CyberSnakeBackground />
+        <LoginPage onSignedIn={setUser} />
+      </>
+    )
+  }
+
   return (
     <>
       <CyberSnakeBackground />
       <main className="app-container">
-      <Header theme={theme} onToggleTheme={handleToggleTheme} username={user.name} />
+      <Header
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        username={user.name}
+        onLogout={handleLogout}
+      />
 
-      <ProfileCard user={user} onSave={setUser} />
+      <ProfileCard user={user} onSave={handleSaveProfile} />
 
       <TaskStats tasks={tasks} />
 
