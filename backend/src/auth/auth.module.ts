@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller.js';
 import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
 import { RefreshToken } from './entities/refresh-token.entity.js';
+import { RolesGuard } from './roles.guard.js';
 
 @Module({
   imports: [
@@ -19,6 +20,10 @@ import { RefreshToken } from './entities/refresh-token.entity.js';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, { provide: APP_GUARD, useClass: AuthGuard }],
+  providers: [
+    AuthService, 
+    { provide: APP_GUARD, useClass: AuthGuard },
+    {provide: APP_GUARD, useClass: RolesGuard}
+  ],
 })
 export class AuthModule {}

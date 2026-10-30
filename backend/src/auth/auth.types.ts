@@ -1,6 +1,9 @@
+import { UserRole } from "../users/entities/user.entity.js";
+
 export interface AccessTokenPayload {
   sub: number;
   email: string;
+  role: UserRole
 }
 
 export interface RefreshTokenPayload {

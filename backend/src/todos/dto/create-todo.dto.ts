@@ -1,8 +1,10 @@
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
   MaxLength,
 } from 'class-validator';
@@ -13,6 +15,11 @@ import {
 } from '../entities/todo.entity.js';
 
 export class CreateTodoDto {
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  userId?: number | null;
+
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
