@@ -1,12 +1,18 @@
 import { useState } from 'react'
-import { Terminal, Shield, Calendar, Layers, Cpu, User, BookOpen, HeartPulse, HardDrive } from 'lucide-react'
+import { Terminal, Shield, Calendar, Layers, Cpu, User, BookOpen, HeartPulse, HardDrive, UserCircle } from 'lucide-react'
 import Dropdown from './Dropdown'
 
-export default function TaskForm({ onAddTask }) {
+export default function TaskForm({ onAddTask, operators = [] }) {
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('Work')
   const [priority, setPriority] = useState('medium')
   const [dueDate, setDueDate] = useState('')
+  const [assigneeId, setAssigneeId] = useState('') // '' = unassigned
+
+  const assigneeOptions = [
+    { value: '', label: 'UNASSIGNED' },
+    ...operators.map((op) => ({ value: op.id, label: op.name.toUpperCase() })),
+  ]
 
   const categoryOptions = [
     { value: 'Work', label: 'SYS_OPS', icon: <Cpu size={13} /> },
@@ -26,6 +32,7 @@ export default function TaskForm({ onAddTask }) {
       category,
       priority,
       dueDate: dueDate || null,
+      userId: assigneeId === '' ? null : assigneeId,
     })
 
     setTitle('')
@@ -64,6 +71,19 @@ export default function TaskForm({ onAddTask }) {
             options={categoryOptions}
             value={category}
             onChange={setCategory}
+            size="sm"
+          />
+        </div>
+
+        {/* Assignee: which operator gets this task */}
+        <div className="option-group" style={{ minWidth: '170px' }}>
+          <span className="option-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <UserCircle size={13} /> ASSIGNEE:
+          </span>
+          <Dropdown
+            options={assigneeOptions}
+            value={assigneeId}
+            onChange={setAssigneeId}
             size="sm"
           />
         </div>

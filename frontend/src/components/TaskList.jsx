@@ -3,6 +3,9 @@ import TaskItem from './TaskItem'
 
 export default function TaskList({
   tasks,
+  canManage,
+  operators,
+  onAssign,
   onStatusChange,
   onDelete,
   onEdit,
@@ -22,7 +25,9 @@ export default function TaskList({
         <p className="empty-state-desc">
           {hasActiveFilters
             ? 'Adjust scan parameters, domain filters, or query string.'
-            : 'Operational queue is idle. Initiate a new directive from the terminal above.'}
+            : canManage
+              ? 'Operational queue is idle. Initiate a new directive from the terminal above.'
+              : 'No directives assigned to you yet.'}
         </p>
       </div>
     )
@@ -34,6 +39,9 @@ export default function TaskList({
         <TaskItem
           key={task.id}
           task={task}
+          canManage={canManage}
+          operators={operators}
+          onAssign={onAssign}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
           onEdit={onEdit}
@@ -44,7 +52,7 @@ export default function TaskList({
         <span>
           TELEMETRY_COUNT: {tasks.length} UNIT{tasks.length === 1 ? '' : 'S'}
         </span>
-        {totalCompletedCount > 0 && (
+        {canManage && totalCompletedCount > 0 && (
           <button
             type="button"
             className="clear-completed-btn"

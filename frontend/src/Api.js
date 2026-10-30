@@ -68,6 +68,7 @@ export const authApi = {
 }
 
 export const usersApi = {
+    getAll: () => request('/users'),
     update: (id, changes) => request(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(changes) }),
 }
 
@@ -75,5 +76,6 @@ export const todosApi = {
     getAll: () => request('/todos'),
     create: (todo) => request('/todos', {method: 'POST', body: JSON.stringify(todo) }),
     update: (id, changes) => request(`/todos/${id}`, { method: 'PATCH', body: JSON.stringify(changes) }),
+    updateStatus: (id, status) => request(`/todos/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
     remove: (id) => request(`/todos/${id}`, { method: 'DELETE' }),
 }

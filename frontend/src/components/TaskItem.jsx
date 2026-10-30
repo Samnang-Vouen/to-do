@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Edit3, Trash2, AlertTriangle, Clock } from 'lucide-react'
+import { Check, Edit3, Trash2, AlertTriangle, Clock, UserCircle } from 'lucide-react'
 
 const STATUS_ORDER = ['todo', 'in-progress', 'done']
 
@@ -9,7 +9,15 @@ const STATUS_LABELS = {
   done: 'DONE',
 }
 
-export default function TaskItem({ task, onStatusChange, onDelete, onEdit }) {
+export default function TaskItem({
+  task,
+  canManage,
+  operators = [],
+  onAssign,
+  onStatusChange,
+  onDelete,
+  onEdit,
+}) {
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(task.title)
 
@@ -103,7 +111,10 @@ export default function TaskItem({ task, onStatusChange, onDelete, onEdit }) {
         </form>
       ) : (
         <div className="task-content">
-          <div className="task-title" onDoubleClick={() => setIsEditing(true)}>
+          <div
+            className="task-title"
+            onDoubleClick={canManage ? () => setIsEditing(true) : undefined}
+          >
             {task.title}
           </div>
 
@@ -141,12 +152,31 @@ export default function TaskItem({ task, onStatusChange, onDelete, onEdit }) {
                 {dueDateInfo.isOverdue ? 'CRIT_OVERDUE' : dueDateInfo.isToday ? 'T-MINUS 0d' : dueDateInfo.formatted}
               </span>
             )}
+
+            {/* Assignee: admins can reassign (native select, since the card clips popups) */}
+            {canManage && (
+              <label className="badge badge-assignee" title="Assign to operator">
+                <UserCircle size={10} />
+                <select
+                  value={task.userId ?? ''}
+                  onChange={(e) => onAssign(task.id, e.target.value ? Number(e.target.value) : null)}
+                  aria-label="Assign to operator"
+                >
+                  <option value="">UNASSIGNED</option>
+                  {operators.map((op) => (
+                    <option key={op.id} value={op.id}>
+                      {op.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
         </div>
       )}
 
-      {/* Actions */}
-      {!isEditing && (
+      {/* Actions: admin only */}
+      {canManage && !isEditing && (
         <div className="task-actions">
           <button
             type="button"
