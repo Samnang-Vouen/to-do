@@ -41,7 +41,10 @@ export class TodosService {
   }
 
   async update(id: number, updateTodoDto: UpdateTodoDto) {
-    const todo = await this.findOneOrFail(id);
+    const todo = await this.repo.findOneBy({id});
+    if(!todo){
+      throw new NotFoundException(`Todo ${id} not found`);
+    }
     await this.checkAssignee(updateTodoDto.userId);
     Object.assign(todo, updateTodoDto);
     await this.repo.save(todo);
