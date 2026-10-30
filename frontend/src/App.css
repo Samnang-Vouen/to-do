@@ -1109,6 +1109,98 @@
   box-shadow: var(--danger-glow);
 }
 
+/* ==========================================================================
+   Login Page // Operator Authentication
+   ========================================================================== */
+.login-container {
+  min-height: 100vh;
+  justify-content: center;
+  max-width: 420px;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 26px 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.login-card::before {
+  content: '// ACCESS_CONTROL';
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: var(--bg-primary);
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+}
+
+/* .profile-field is sized for a row layout; don't let it stretch in this column */
+.login-card .profile-field {
+  flex: none;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.login-brand h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--text-primary);
+  line-height: 1.2;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.login-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+
+.login-error {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.login-submit {
+  justify-content: center;
+}
+
+.login-switch {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-decoration: underline;
+  align-self: center;
+}
+
+.login-switch:hover {
+  color: var(--accent-cyan);
+}
+
 /* Responsive Adaptations */
 @media (max-width: 640px) {
   .app-container {

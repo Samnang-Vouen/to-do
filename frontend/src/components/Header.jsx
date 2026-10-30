@@ -1,6 +1,6 @@
-import { Cpu, Terminal, Sun, Moon, Radio, UserCircle } from 'lucide-react'
+import { Cpu, Terminal, Sun, Moon, Radio, UserCircle, LogOut } from 'lucide-react'
 
-export default function Header({ theme, onToggleTheme, username }) {
+export default function Header({ theme, onToggleTheme, username, onLogout }) {
   const todayFormatted = new Intl.DateTimeFormat('en-US', {
     weekday: 'short',
     month: 'short',
@@ -41,6 +41,15 @@ export default function Header({ theme, onToggleTheme, username }) {
           aria-label="Toggle environment matrix"
         >
           {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+        </button>
+        <button
+          type="button"
+          className="theme-toggle-btn"
+          onClick={onLogout}
+          title="Sign out"
+          aria-label="Sign out"
+        >
+          <LogOut size={17} />
         </button>
       </div>
     </header>
